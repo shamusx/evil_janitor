@@ -85,6 +85,8 @@ if __name__ == "__main__":
                         dest='tag_key', help='Custom Tag Search')
     parser.add_argument("--tag-value", required=False,
                         dest='tag_value', help='Custom Tag Search')
+    parser.add_argument("--lab-timezone", required=False,
+                            dest='lab_timezone', help='Supported lab timezones: EST, PST, GMT, SGT')
     parser.add_argument("--action", required=True,
                         dest='action', help='Supported actions: stop, start or list', default=None)
     parser.add_argument("--apply",  action='store_true',
@@ -106,6 +108,11 @@ if __name__ == "__main__":
             'Name': 'tag:'+args.tag_key,
             'Values': ['*']
         }]
+    if args.lab_timezone:
+        filters.append({
+            'Name': 'tag:Lab_Timezone',
+            'Values': [args.lab_timezone]
+        })
     if args.action == 'stop':
         stop_instances(region=args.region, filters=filters, apply=args.apply)
     elif args.action == 'start':
