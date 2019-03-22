@@ -3,7 +3,7 @@ import argparse
 import boto3
 import datetime
 
-def stop_instances(region, filters, apply=False):
+def stop_instances(region, filters, exclude_tag, apply=False):
     current_time = datetime.datetime.utcnow()
     stop_instance_ids = []
     ec2 = boto3.client('ec2',region_name=region)
@@ -12,7 +12,7 @@ def stop_instances(region, filters, apply=False):
     print 'EC2 Resources to be stopped at ', current_time
     for reservation in ec2_instances["Reservations"]:
         for instance in reservation["Instances"]:
-            if instance['State']['Name'] == 'running':
+            if instance['State']['Name'] == 'running' and exclude_tag not in str(instance):
                 stop_instance_ids.append(instance['InstanceId'])
                 name_tag_exists = False
                 try:
@@ -26,11 +26,11 @@ def stop_instances(region, filters, apply=False):
                 except:
                   pass
     print 'Stopping Instances List: ', stop_instance_ids
-    if apply:
+    if apply and stop_instance_ids:
         ec2.stop_instances(InstanceIds=stop_instance_ids)
 
 
-def start_instances(region, filters, apply=False):
+def start_instances(region, filters, exclude_tag, apply=False):
     current_time = datetime.datetime.utcnow()
     start_instance_ids = []
     ec2 = boto3.client('ec2',region_name=region)
@@ -38,7 +38,7 @@ def start_instances(region, filters, apply=False):
     print 'EC2 Resources to be started at ', current_time
     for reservation in ec2_instances["Reservations"]:
         for instance in reservation["Instances"]:
-            if instance['State']['Name'] == 'stopped':
+            if instance['State']['Name'] == 'stopped' and exclude_tag not in str(instance):
                 start_instance_ids.append(instance['InstanceId'])
                 name_tag_exists = False
                 try:
@@ -51,8 +51,9 @@ def start_instances(region, filters, apply=False):
                           print 'unnamed', instance['InstanceId']
                 except:
                   pass
+
     print 'Starting Instances List:', start_instance_ids
-    if apply:
+    if apply and start_instance_ids:
         ec2.start_instances(InstanceIds=start_instance_ids)
 
 def list_instances(region, filters):
@@ -87,6 +88,8 @@ if __name__ == "__main__":
                         dest='tag_value', help='Custom Tag Search')
     parser.add_argument("--lab-timezone", required=False,
                             dest='lab_timezone', help='Supported lab timezones: EST, PST, GMT, SGT')
+    parser.add_argument("--exclude-tag", required=False,
+                        dest='exclude_tag', default='EXCLUDE_TAG', help='Exclude from action based on tag')
     parser.add_argument("--action", required=True,
                         dest='action', help='Supported actions: stop, start or list', default=None)
     parser.add_argument("--apply",  action='store_true',
@@ -113,9 +116,10 @@ if __name__ == "__main__":
             'Name': 'tag:Lab_Timezone',
             'Values': [args.lab_timezone]
         })
+
     if args.action == 'stop':
-        stop_instances(region=args.region, filters=filters, apply=args.apply)
+        stop_instances(region=args.region, filters=filters, exclude_tag=args.exclude_tag, apply=args.apply)
     elif args.action == 'start':
-        start_instances(region=args.region, filters=filters, apply=args.apply)
+        start_instances(region=args.region, filters=filters, exclude_tag=args.exclude_tag, apply=args.apply)
     elif args.action == 'list':
         list_instances(region=args.region, filters=filters)
