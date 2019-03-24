@@ -8,8 +8,7 @@ def stop_instances(region, filters, exclude_tag, apply=False):
     stop_instance_ids = []
     ec2 = boto3.client('ec2',region_name=region)
     ec2_instances = ec2.describe_instances(Filters=filters)
-    print 'Time:', current_time
-    print 'EC2 Resources to be stopped at ', current_time
+    print region, 'EC2 resources to be stopped at', current_time
     for reservation in ec2_instances["Reservations"]:
         for instance in reservation["Instances"]:
             if instance['State']['Name'] == 'running' and exclude_tag not in str(instance):
@@ -35,7 +34,7 @@ def start_instances(region, filters, exclude_tag, apply=False):
     start_instance_ids = []
     ec2 = boto3.client('ec2',region_name=region)
     ec2_instances = ec2.describe_instances(Filters=filters)
-    print 'EC2 Resources to be started at ', current_time
+    print region, 'EC2 Resources to be started at', current_time
     for reservation in ec2_instances["Reservations"]:
         for instance in reservation["Instances"]:
             if instance['State']['Name'] == 'stopped' and exclude_tag not in str(instance):
@@ -61,7 +60,7 @@ def list_instances(region, filters):
     start_instance_ids = []
     ec2 = boto3.client('ec2', region_name=region)
     ec2_instances = ec2.describe_instances(Filters=filters)
-    print 'EC2 Resources state at ', current_time
+    print region, 'EC2 Resources state at',current_time
     for reservation in ec2_instances["Reservations"]:
         for instance in reservation["Instances"]:
             name_tag_exists = False
@@ -112,6 +111,7 @@ if __name__ == "__main__":
             'Values': ['*']
         }]
     if args.lab_timezone:
+        print "Lab Timezone:", args.lab_timezone
         filters.append({
             'Name': 'tag:Lab_Timezone',
             'Values': [args.lab_timezone]
