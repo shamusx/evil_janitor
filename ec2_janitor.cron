@@ -4,6 +4,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # EST - GMT-4
 # GMT - GMT
 # SGT - GMT+8 
+# IST - GMT+5.30
 # ###########
 # START LABS#
 # ###########
