@@ -14,7 +14,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
 0 15 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone PST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 0 15 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone PST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-0 15 * * * root ec2_janitor.py --region eu-west-2 --tag-owner=Training --lab-timezone PST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+0 15 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone PST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 #
 # EST - GMT-5
 # 
@@ -22,7 +22,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
 0 12 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone EST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 0 12 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone EST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-0 12 * * * root ec2_janitor.py --region eu-west-2 --tag-owner=Training --lab-timezone EST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+0 12 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone EST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 #
 # GMT
 # 
@@ -30,7 +30,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
 0 7 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone GMT --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 0 7 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone GMT --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-0 7 * * * root ec2_janitor.py --region eu-west-2 --tag-owner=Training --lab-timezone GMT --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+0 7 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone GMT --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 #
 # SGT - GMT+8
 #
@@ -38,8 +38,16 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
 0 23 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone SGT --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 0 23 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone SGT --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-0 23 * * * root ec2_janitor.py --region eu-west-2 --tag-owner=Training --lab-timezone SGT --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-# ###########
+0 23 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone SGT --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+#
+# IST - GMT+5.30
+#
+# 7AM IST
+#
+30 1 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone IST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+30 1 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone IST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+30 1 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone IST --action start --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+## ###########
 # STOP LABS #
 # ###########
 #
@@ -49,7 +57,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
 0 3 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone PST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 0 3 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone PST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-0 3 * * * root ec2_janitor.py --region eu-west-2 --tag-owner=Training --lab-timezone PST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+0 3 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone PST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 #
 # EST - GMT-5
 # 
@@ -57,7 +65,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
 0 0 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone EST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 0 0 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone EST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-0 0 * * * root ec2_janitor.py --region eu-west-2 --tag-owner=Training --lab-timezone EST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+0 0 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone EST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 #
 # GMT
 # 
@@ -65,7 +73,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
 0 19 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone GMT --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 0 19 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone GMT --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-0 19 * * * root ec2_janitor.py --region eu-west-2 --tag-owner=Training --lab-timezone GMT --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+0 19 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone GMT --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 #
 # SGT - GMT+8
 #
@@ -73,7 +81,16 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 #
 0 11 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone SGT --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
 0 11 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone SGT --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
-0 11 * * * root ec2_janitor.py --region eu-west-2 --tag-owner=Training --lab-timezone SGT --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+0 11 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone SGT --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+#
+# IST - GMT+5.30
+#
+# 7PM IST
+#
+30 13 * * * root ec2_janitor.py --region us-west-2 --tag-owner=Training --lab-timezone IST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+30 13 * * * root ec2_janitor.py --region us-east-1 --tag-owner=Training --lab-timezone IST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+30 13 * * * root ec2_janitor.py --region eu-west-1 --tag-owner=Training --lab-timezone IST --action stop --apply --exclude-tag Lab_Noshut >> /var/log/ec2_janitor.log 2>&1
+
 
 
 
