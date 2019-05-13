@@ -2,10 +2,26 @@
 import argparse
 import boto3
 import datetime
+import json
+import requests
+
+
+def send_message(message,type='text'):
+    webhook_url = ''
+    if type == 'title':
+        slack_message = {"text": message }
+    else:
+        slack_message = {"attachments": [{"text":message }]}
+    r = requests.post(webhook_url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
+    if r.status_code != 200:
+        raise ValueError('Request to slack returned an error %s, the response is:\n%s' % (r.status_code, r.text))
+
 
 def stop_instances(region, filters, exclude_tag, apply=False):
     current_time = datetime.datetime.utcnow()
     stop_instance_ids = []
+    stop_instances = {}
+    stop_instances['noname'] = []
     ec2 = boto3.client('ec2',region_name=region)
     ec2_instances = ec2.describe_instances(Filters=filters)
     print region, 'EC2 resources to be stopped at', current_time
@@ -17,14 +33,23 @@ def stop_instances(region, filters, exclude_tag, apply=False):
                 try:
                   if instance['Tags']:
                       for tag in instance['Tags']:
-                        if tag['Key'] == 'Name':
+                        if tag['Key'] == 'Name' and tag['Value'] != '':
                           print tag['Value'], instance['InstanceId']
+                          stop_instances[tag['Value']] = instance['InstanceId']
                           name_tag_exists = True
                       if name_tag_exists == False:
-                          print 'unnamed', instance['InstanceId']
+                          print 'noname', instance['InstanceId']
+                          stop_instances['noname'].append(instance['InstanceId'])
                 except:
                   pass
     print 'Stopping Instances List: ', stop_instance_ids
+    if stop_instances['noname'] == []:
+        stop_instances.pop('noname')
+    if stop_instances:
+        send_message('*' + region + ' EC2 resources to be stopped at ' + str(current_time) +  '*', type='title')
+        send_message(str(stop_instances))
+        send_message('_' +  str(args) + '_', type='title')
+        send_message('\r')
     if apply and stop_instance_ids:
         ec2.stop_instances(InstanceIds=stop_instance_ids)
 
@@ -32,6 +57,8 @@ def stop_instances(region, filters, exclude_tag, apply=False):
 def start_instances(region, filters, exclude_tag, apply=False):
     current_time = datetime.datetime.utcnow()
     start_instance_ids = []
+    start_instances = {}
+    start_instances['noname'] = []
     ec2 = boto3.client('ec2',region_name=region)
     ec2_instances = ec2.describe_instances(Filters=filters)
     print region, 'EC2 Resources to be started at', current_time
@@ -43,15 +70,23 @@ def start_instances(region, filters, exclude_tag, apply=False):
                 try:
                   if instance['Tags']:
                       for tag in instance['Tags']:
-                        if tag['Key'] == 'Name':
+                        if tag['Key'] == 'Name' and tag['Value'] != '':
                           print tag['Value'], instance['InstanceId']
+                          start_instances[tag['Value']] = instance['InstanceId']
                           name_tag_exists = True
                       if name_tag_exists == False:
-                          print 'unnamed', instance['InstanceId']
+                          print 'noname', instance['InstanceId']
+                          start_instances['noname'].append(instance['InstanceId'])
                 except:
                   pass
-
     print 'Starting Instances List:', start_instance_ids
+    if start_instances['noname'] == []:
+        start_instances.pop('noname')
+    if start_instances:
+        send_message('*' + region + ' EC2 Resources to be started at ' + str(current_time) +  '*', type='title')
+        send_message(str(start_instances))
+        send_message('_' +  str(args) + '_', type='title')
+        send_message('\r')
     if apply and start_instance_ids:
         ec2.start_instances(InstanceIds=start_instance_ids)
 
@@ -71,7 +106,7 @@ def list_instances(region, filters):
                       print tag['Value'], instance['InstanceId'], instance['State']['Name'], instance['InstanceType']
                       name_tag_exists = True
                   if name_tag_exists == False:
-                      print 'unnamed', instance['InstanceId'], instance['State']['Name'], instance['InstanceType']
+                      print 'noname', instance['InstanceId'], instance['State']['Name'], instance['InstanceType']
             except:
               pass
 
@@ -116,10 +151,10 @@ if __name__ == "__main__":
             'Name': 'tag:Lab_Timezone',
             'Values': [args.lab_timezone]
         })
-
     if args.action == 'stop':
         stop_instances(region=args.region, filters=filters, exclude_tag=args.exclude_tag, apply=args.apply)
     elif args.action == 'start':
         start_instances(region=args.region, filters=filters, exclude_tag=args.exclude_tag, apply=args.apply)
     elif args.action == 'list':
         list_instances(region=args.region, filters=filters)
+    print args
