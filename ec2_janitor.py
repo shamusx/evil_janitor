@@ -5,110 +5,129 @@ import datetime
 import json
 import requests
 
+class Slack(object):
+    def __init__(self, webhook_url):
+        self.webhook_url = webhook_url
+    def send_message(self,message,type='text'):
+        if type == 'title':
+            slack_message = {"text": message }
+        else:
+            slack_message = {"attachments": [{"text":message }]}
+        r = requests.post(self.webhook_url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
+        if r.status_code != 200:
+            raise ValueError('Request to slack returned an error %s, the response is:\n%s' % (r.status_code, r.text))
 
-def send_message(message,type='text'):
-    webhook_url = ''
-    if type == 'title':
-        slack_message = {"text": message }
-    else:
-        slack_message = {"attachments": [{"text":message }]}
-    r = requests.post(webhook_url, data=json.dumps(slack_message), headers={'Content-Type': 'application/json'})
-    if r.status_code != 200:
-        raise ValueError('Request to slack returned an error %s, the response is:\n%s' % (r.status_code, r.text))
+class Evil_Janitor(object):
+    def __init__(self, region, filters, exclude_tag, webhook_url, apply=False, send_message=False, custom_message_header=None):
+        self.region = region
+        self.filters = filters
+        self.exclude_tag = exclude_tag
+        self.apply = apply
+        self.send_message = send_message
+        self.current_time = str(datetime.datetime.utcnow())
+        self.ec2 = boto3.client('ec2',region_name=self.region)
+        self.ec2_instances = self.ec2.describe_instances(Filters=self.filters)
+        self.webhook_url = webhook_url
+        self.slack = Slack(self.webhook_url)
+        if custom_message_header:
+            self.slack.send_message('*' + custom_message_header + '*',type='title')
 
+    def stop_instances(self):
+        stop_instance_ids = []
+        stop_instances = {}
+        stop_instances['noname'] = []
+        print self.region, 'EC2 resources to be stopped at', self.current_time
+        for reservation in self.ec2_instances["Reservations"]:
+            for instance in reservation["Instances"]:
+                if instance['State']['Name'] == 'running' and self.exclude_tag not in str(instance):
+                    stop_instance_ids.append(instance['InstanceId'])
+                    name_tag_exists = False
+                    try:
+                      if instance['Tags']:
+                          for tag in instance['Tags']:
+                            if tag['Key'] == 'Name' and tag['Value'] != '':
+                                print tag['Value'], instance['InstanceId']
+                                stop_instances[tag['Value']] = instance['InstanceId']
+                                name_tag_exists = True
+                          if name_tag_exists == False:
+                              print 'noname', instance['InstanceId']
+                              stop_instances['noname'].append(instance['InstanceId'])
+                    except:
+                      print 'noname', instance['InstanceId']
+                      stop_instances['noname'].append(instance['InstanceId'])
+        print 'Stopping Instances List: ', stop_instance_ids
+        if stop_instances['noname'] == []:
+            stop_instances.pop('noname')
+        if stop_instances and self.send_message:
+            self.slack.send_message('*' + self.region + ' EC2 resources to be stopped at ' + self.current_time +  '*', type='title')
+            self.slack.send_message(str(stop_instances))
+            self.slack.send_message('_' +  str(args) + '_', type='title')
+            self.slack.send_message('\r')
+        if self.apply and stop_instance_ids:
+            self.ec2.stop_instances(InstanceIds=stop_instance_ids)
 
-def stop_instances(region, filters, exclude_tag, apply=False):
-    current_time = datetime.datetime.utcnow()
-    stop_instance_ids = []
-    stop_instances = {}
-    stop_instances['noname'] = []
-    ec2 = boto3.client('ec2',region_name=region)
-    ec2_instances = ec2.describe_instances(Filters=filters)
-    print region, 'EC2 resources to be stopped at', current_time
-    for reservation in ec2_instances["Reservations"]:
-        for instance in reservation["Instances"]:
-            if instance['State']['Name'] == 'running' and exclude_tag not in str(instance):
-                stop_instance_ids.append(instance['InstanceId'])
+    def start_instances(self):
+        start_instance_ids = []
+        start_instances = {}
+        start_instances['noname'] = []
+        print self.region, 'EC2 Resources to be started at', self.current_time
+        for reservation in self.ec2_instances["Reservations"]:
+            for instance in reservation["Instances"]:
+                if instance['State']['Name'] == 'stopped' and self.exclude_tag not in str(instance):
+                    start_instance_ids.append(instance['InstanceId'])
+                    name_tag_exists = False
+                    try:
+                      if instance['Tags']:
+                          for tag in instance['Tags']:
+                            if tag['Key'] == 'Name' and tag['Value'] != '':
+                              print tag['Value'], instance['InstanceId']
+                              start_instances[tag['Value']] = instance['InstanceId']
+                              name_tag_exists = True
+                          if name_tag_exists == False:
+                              print 'noname', instance['InstanceId']
+                              start_instances['noname'].append(instance['InstanceId'])
+                    except:
+                      print 'noname', instance['InstanceId']
+                      start_instances['noname'].append(instance['InstanceId'])
+        print 'Starting Instances List:', start_instance_ids
+        if start_instances['noname'] == []:
+            start_instances.pop('noname')
+        if start_instances and self.send_message:
+            self.slack.send_message('*' + self.region + ' EC2 Resources to be started at ' + self.current_time +  '*', type='title')
+            self.slack.send_message(str(start_instances))
+            self.slack.send_message('_' +  str(args) + '_', type='title')
+            self.slack.send_message('\r')
+        if self.apply and start_instance_ids:
+            self.ec2.start_instances(InstanceIds=start_instance_ids)
+
+    def list_instances(self):
+        list_instance_ids = []
+        list_instances = {}
+        list_instances['noname'] = []
+        print self.region, 'EC2 Resources state at', self.current_time
+        for reservation in self.ec2_instances["Reservations"]:
+            for instance in reservation["Instances"]:
                 name_tag_exists = False
-                try:
-                  if instance['Tags']:
+                if self.exclude_tag not in str(instance):
+                  try:
                       for tag in instance['Tags']:
                         if tag['Key'] == 'Name' and tag['Value'] != '':
-                          print tag['Value'], instance['InstanceId']
-                          stop_instances[tag['Value']] = instance['InstanceId']
-                          name_tag_exists = True
+                            print tag['Value'], instance['InstanceId'], instance['State']['Name'], instance['InstanceType']
+                            list_instances[tag['Value']] = instance['InstanceId']
+                            name_tag_exists = True
                       if name_tag_exists == False:
-                          print 'noname', instance['InstanceId']
-                          stop_instances['noname'].append(instance['InstanceId'])
-                except:
-                  pass
-    print 'Stopping Instances List: ', stop_instance_ids
-    if stop_instances['noname'] == []:
-        stop_instances.pop('noname')
-    if stop_instances:
-        send_message('*' + region + ' EC2 resources to be stopped at ' + str(current_time) +  '*', type='title')
-        send_message(str(stop_instances))
-        send_message('_' +  str(args) + '_', type='title')
-        send_message('\r')
-    if apply and stop_instance_ids:
-        ec2.stop_instances(InstanceIds=stop_instance_ids)
-
-
-def start_instances(region, filters, exclude_tag, apply=False):
-    current_time = datetime.datetime.utcnow()
-    start_instance_ids = []
-    start_instances = {}
-    start_instances['noname'] = []
-    ec2 = boto3.client('ec2',region_name=region)
-    ec2_instances = ec2.describe_instances(Filters=filters)
-    print region, 'EC2 Resources to be started at', current_time
-    for reservation in ec2_instances["Reservations"]:
-        for instance in reservation["Instances"]:
-            if instance['State']['Name'] == 'stopped' and exclude_tag not in str(instance):
-                start_instance_ids.append(instance['InstanceId'])
-                name_tag_exists = False
-                try:
-                  if instance['Tags']:
-                      for tag in instance['Tags']:
-                        if tag['Key'] == 'Name' and tag['Value'] != '':
-                          print tag['Value'], instance['InstanceId']
-                          start_instances[tag['Value']] = instance['InstanceId']
-                          name_tag_exists = True
-                      if name_tag_exists == False:
-                          print 'noname', instance['InstanceId']
-                          start_instances['noname'].append(instance['InstanceId'])
-                except:
-                  pass
-    print 'Starting Instances List:', start_instance_ids
-    if start_instances['noname'] == []:
-        start_instances.pop('noname')
-    if start_instances:
-        send_message('*' + region + ' EC2 Resources to be started at ' + str(current_time) +  '*', type='title')
-        send_message(str(start_instances))
-        send_message('_' +  str(args) + '_', type='title')
-        send_message('\r')
-    if apply and start_instance_ids:
-        ec2.start_instances(InstanceIds=start_instance_ids)
-
-def list_instances(region, filters):
-    current_time = datetime.datetime.utcnow()
-    start_instance_ids = []
-    ec2 = boto3.client('ec2', region_name=region)
-    ec2_instances = ec2.describe_instances(Filters=filters)
-    print region, 'EC2 Resources state at',current_time
-    for reservation in ec2_instances["Reservations"]:
-        for instance in reservation["Instances"]:
-            name_tag_exists = False
-            try:
-              if instance['Tags']:
-                  for tag in instance['Tags']:
-                    if tag['Key'] == 'Name':
-                      print tag['Value'], instance['InstanceId'], instance['State']['Name'], instance['InstanceType']
-                      name_tag_exists = True
-                  if name_tag_exists == False:
-                      print 'noname', instance['InstanceId'], instance['State']['Name'], instance['InstanceType']
-            except:
-              pass
+                          print 'noname', instance['InstanceId'], instance['InstanceType']
+                          list_instances['noname'].append(instance['InstanceId'])
+                  except:
+                    print 'noname', instance['InstanceId'], instance['InstanceType']
+                    list_instances['noname'].append(instance['InstanceId'])
+        if list_instances['noname'] == []:
+            list_instances.pop('noname')
+        if list_instances and self.send_message:
+            self.slack.send_message('*' + self.region + ' EC2 Resources state at ' + self.current_time +  '*', type='title')
+            self.slack.send_message(str(list_instances))
+            self.slack.send_message('_' +  str(args) + '_', type='title')
+            self.slack.send_message('\r')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ec2_janitor.py --region us-west-2  --tag-owner Training --apply --action stop')
@@ -127,7 +146,11 @@ if __name__ == "__main__":
     parser.add_argument("--action", required=True,
                         dest='action', help='Supported actions: stop, start or list', default=None)
     parser.add_argument("--apply",  action='store_true',
-                        dest='apply', help='Apply changes', default=None)
+                        dest='apply', help='Apply changes', default=False)
+    parser.add_argument("--send-message",  action='store_true',
+                        dest='send_message', help='Send slack message', default=False)
+    parser.add_argument("--custom-message-header",  action='store',
+                        dest='custom_message_header', help='Custom slack message header', default=None)
     args = parser.parse_args()
 
     if args.tag_owner:
@@ -145,16 +168,24 @@ if __name__ == "__main__":
             'Name': 'tag:'+args.tag_key,
             'Values': ['*']
         }]
+    else:
+        filters = [{}]
+
     if args.lab_timezone:
         print "Lab Timezone:", args.lab_timezone
         filters.append({
             'Name': 'tag:Lab_Timezone',
             'Values': [args.lab_timezone]
         })
+
+
+    webhook_url = ''
+    evil_janitor = Evil_Janitor(region=args.region, filters=filters, exclude_tag=args.exclude_tag, webhook_url=webhook_url, apply=args.apply, send_message=args.send_message, custom_message_header=args.custom_message_header)
+
     if args.action == 'stop':
-        stop_instances(region=args.region, filters=filters, exclude_tag=args.exclude_tag, apply=args.apply)
+        evil_janitor.stop_instances()
     elif args.action == 'start':
-        start_instances(region=args.region, filters=filters, exclude_tag=args.exclude_tag, apply=args.apply)
+        evil_janitor.start_instances()
     elif args.action == 'list':
-        list_instances(region=args.region, filters=filters)
+        evil_janitor.list_instances()
     print args
