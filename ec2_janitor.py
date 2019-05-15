@@ -29,8 +29,8 @@ class Evil_Janitor(object):
         self.ec2_instances = self.ec2.describe_instances(Filters=self.filters)
         self.webhook_url = webhook_url
         self.slack = Slack(self.webhook_url)
-        if custom_message_header:
-            self.slack.send_message('*' + custom_message_header + '*',type='title')
+        self.custom_message_header = custom_message_header
+
 
     def stop_instances(self):
         stop_instance_ids = []
@@ -59,6 +59,8 @@ class Evil_Janitor(object):
         if stop_instances['noname'] == []:
             stop_instances.pop('noname')
         if stop_instances and self.send_message:
+            if self.custom_message_header:
+                self.slack.send_message('*' + self.custom_message_header + '*',type='title')
             self.slack.send_message('*' + self.region + ' EC2 resources to be stopped at ' + self.current_time +  '*', type='title')
             self.slack.send_message(str(stop_instances))
             self.slack.send_message('_' +  str(args) + '_', type='title')
@@ -93,6 +95,8 @@ class Evil_Janitor(object):
         if start_instances['noname'] == []:
             start_instances.pop('noname')
         if start_instances and self.send_message:
+            if self.custom_message_header:
+                self.slack.send_message('*' + self.custom_message_header + '*',type='title')
             self.slack.send_message('*' + self.region + ' EC2 Resources to be started at ' + self.current_time +  '*', type='title')
             self.slack.send_message(str(start_instances))
             self.slack.send_message('_' +  str(args) + '_', type='title')
@@ -124,6 +128,8 @@ class Evil_Janitor(object):
         if list_instances['noname'] == []:
             list_instances.pop('noname')
         if list_instances and self.send_message:
+            if self.custom_message_header:
+                self.slack.send_message('*' + self.custom_message_header + '*',type='title')
             self.slack.send_message('*' + self.region + ' EC2 Resources state at ' + self.current_time +  '*', type='title')
             self.slack.send_message(str(list_instances))
             self.slack.send_message('_' +  str(args) + '_', type='title')
