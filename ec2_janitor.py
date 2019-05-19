@@ -18,18 +18,35 @@ class Slack(object):
             raise ValueError('Request to slack returned an error %s, the response is:\n%s' % (r.status_code, r.text))
 
 class Evil_Janitor(object):
-    def __init__(self, region, filters, exclude_tag, webhook_url, apply=False, send_message=False, custom_message_header=None):
+    def __init__(self, aws_account, region, filters, exclude_tag, webhook_url, apply=False, send_message=False, custom_message_header=None):
+        self.aws_account = aws_account
         self.region = region
         self.filters = filters
         self.exclude_tag = exclude_tag
         self.apply = apply
         self.send_message = send_message
         self.current_time = str(datetime.datetime.utcnow())
-        self.ec2 = boto3.client('ec2',region_name=self.region)
+        if self.aws_account == 'avitest':
+            self.aws_role_to_assume_arn = 'arn:aws:iam::123456789:role/avitest'
+            self.credentials = self._get_credentials()
+            self.ec2 = boto3.client('ec2', region_name=self.region, aws_access_key_id=self.credentials['AccessKeyId'],
+                aws_secret_access_key=self.credentials['SecretAccessKey'],
+                aws_session_token=self.credentials['SessionToken']
+            )
+        else:
+            self.ec2 = boto3.client('ec2',region_name=self.region)
         self.ec2_instances = self.ec2.describe_instances(Filters=self.filters)
         self.webhook_url = webhook_url
         self.slack = Slack(self.webhook_url)
         self.custom_message_header = custom_message_header
+
+    def _get_credentials(self):
+        sts_default_provider_chain = boto3.client('sts')
+        response=sts_default_provider_chain.assume_role(
+            RoleArn=self.aws_role_to_assume_arn,
+            RoleSessionName=self.aws_account
+        )
+        return response['Credentials']
 
 
     def stop_instances(self):
@@ -104,6 +121,7 @@ class Evil_Janitor(object):
         if self.apply and start_instance_ids:
             self.ec2.start_instances(InstanceIds=start_instance_ids)
 
+
     def list_instances(self):
         list_instance_ids = []
         list_instances = {}
@@ -135,10 +153,17 @@ class Evil_Janitor(object):
             self.slack.send_message('_' +  str(args) + '_', type='title')
             self.slack.send_message('\r')
 
+    def disable_cpu_bursting(self):
+        for reservation in self.ec2_instances["Reservations"]:
+            for instance in reservation["Instances"]:
+                self.ec2.modify_instance_credit_specification(InstanceCreditSpecifications=[{'InstanceId': instance['InstanceId'], 'CpuCredits': 'standard'}])
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ec2_janitor.py --region us-west-2  --tag-owner Training --apply --action stop')
     parser.add_argument("--region", required=True,
                         dest='region', default='ca-central-1')
+    parser.add_argument("--aws_account", required=False,
+                        dest='aws_account', default='avitraining')
     parser.add_argument("--tag-owner", required=False,
                         dest='tag_owner', help='Owner Tag Search mask: *tag_owner')
     parser.add_argument("--tag-key", required=False,
@@ -186,7 +211,7 @@ if __name__ == "__main__":
 
 
     webhook_url = ''
-    evil_janitor = Evil_Janitor(region=args.region, filters=filters, exclude_tag=args.exclude_tag, webhook_url=webhook_url, apply=args.apply, send_message=args.send_message, custom_message_header=args.custom_message_header)
+    evil_janitor = Evil_Janitor(aws_account=args.aws_account, region=args.region, filters=filters, exclude_tag=args.exclude_tag, webhook_url=webhook_url, apply=args.apply, send_message=args.send_message, custom_message_header=args.custom_message_header)
 
     if args.action == 'stop':
         evil_janitor.stop_instances()
@@ -194,4 +219,6 @@ if __name__ == "__main__":
         evil_janitor.start_instances()
     elif args.action == 'list':
         evil_janitor.list_instances()
+    elif args.action == 'disable_cpu_bursting':
+        evil_janitor.disable_cpu_bursting()
     print args
