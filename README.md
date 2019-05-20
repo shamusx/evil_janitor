@@ -11,16 +11,19 @@ The future functionality is:
 
 ```
 root@avitools:~/evil_janitor# ./ec2_janitor.py -h
-usage: ec2_janitor.py [-h] --region REGION [--tag-owner TAG_OWNER]
-                      [--tag-key TAG_KEY] [--tag-value TAG_VALUE]
-                      [--lab-timezone LAB_TIMEZONE]
+usage: ec2_janitor.py [-h] --region REGION [--aws_account AWS_ACCOUNT]
+                      [--tag-owner TAG_OWNER] [--tag-key TAG_KEY]
+                      [--tag-value TAG_VALUE] [--lab-timezone LAB_TIMEZONE]
                       [--exclude-tag EXCLUDE_TAG] --action ACTION [--apply]
+                      [--send-message]
+                      [--custom-message-header CUSTOM_MESSAGE_HEADER]
 
 ec2_janitor.py --region us-west-2 --tag-owner Training --apply --action stop
 
 optional arguments:
   -h, --help            show this help message and exit
   --region REGION
+  --aws_account AWS_ACCOUNT
   --tag-owner TAG_OWNER
                         Owner Tag Search mask: *tag_owner
   --tag-key TAG_KEY     Custom Tag Search
@@ -32,6 +35,9 @@ optional arguments:
                         Exclude from action based on tag
   --action ACTION       Supported actions: stop, start or list
   --apply               Apply changes
+  --send-message        Send slack message
+  --custom-message-header CUSTOM_MESSAGE_HEADER
+                        Custom slack message header
 ```
 ## Examples
 ### List all training instances
