@@ -1,0 +1,119 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+# PST - UTC-7
+# EST - UTC-4
+# GMT - UTC
+# SGT - UTC+8
+# IST - UTC+5.30
+# ###########
+# START LABS#
+# ###########
+#
+# PST - UTC-8
+#
+# 6AM PST
+#
+0 13 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone PST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 13 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone PST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 13 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone PST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+#
+# EST - UTC-5
+#
+# 6AM EST
+#
+0 10 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone EST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 10 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone EST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 10 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone EST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+#
+# UTC
+#
+# 6AM UTC
+#
+0 6 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone UTC --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 6 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone UTC --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 6 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone UTC --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 6 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone GMT --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 6 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone GMT --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 6 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone GMT --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+##
+# SGT - UTC+8
+#
+# 6AM SGT
+#
+0 22 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone SGT --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 22 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone SGT --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 22 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone SGT --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+#
+# IST - UTC+5.30
+#
+# 6AM IST
+#
+30 0 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone IST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+30 0 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone IST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+30 0 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone IST --action start --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+## ###########
+# STOP LABS #
+# ###########
+#
+# PST - UTC-8
+#
+# 12AM PST
+#
+0 7 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone PST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 7 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone PST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 7 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone PST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+#
+# EST - UTC-5
+#
+# 12AM EST
+#
+0 4 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone EST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 4 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone EST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 4 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone EST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+#
+# UTC
+#
+# 12AM UTC
+#
+0 0 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone UTC --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 0 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone UTC --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 0 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone UTC --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 0 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone GMT --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 0 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone GMT --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 0 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone GMT --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+##
+# SGT - UTC+8
+#
+# 12AM SGT
+#
+0 16 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone SGT --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 16 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone SGT --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 16 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone SGT --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+#
+# IST - UTC+5.30
+#
+# 12AM IST
+#
+30 18 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --tag-owner=Training --lab-timezone IST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+30 18 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --tag-owner=Training --lab-timezone IST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+30 18 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --tag-owner=Training --lab-timezone IST --action stop --apply --exclude-tag Lab_Noshut  >> /var/log/ec2_janitor_awsps.log 2>&1
+
+######################################
+#
+# Track untagged EC2 Resources
+#
+######################################
+
+0 7 * * * root ec2_janitor.py --aws_account avips --region us-west-2 --action list --exclude-tag=Lab_Timezone --custom-message-header="Untagged EC2 Resources"  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 7 * * * root ec2_janitor.py --aws_account avips --region us-east-1 --action list --exclude-tag=Lab_Timezone --custom-message-header="Untagged EC2 Resources"  >> /var/log/ec2_janitor_awsps.log 2>&1
+0 7 * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --action list --exclude-tag=Lab_Timezone --custom-message-header="Untagged EC2 Resources"  >> /var/log/ec2_janitor_awsps.log 2>&1
+
+######################################
+#
+#  Disable CPU bursting for T2 and T3 instances
+#
+######################################
+
+*/20 * * * * root ec2_janitor.py --aws_account avips --region us-west-2 --action disable_cpu_bursting >> /var/log/ec2_janitor_awsps.log 2>&1
+*/20 * * * * root ec2_janitor.py --aws_account avips --region us-east-1 --action disable_cpu_bursting >> /var/log/ec2_janitor_awsps.log 2>&1
+*/20 * * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --action disable_cpu_bursting >> /var/log/ec2_janitor_awsps.log 2>&1
