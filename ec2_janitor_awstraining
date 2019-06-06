@@ -118,7 +118,3 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 */15 * * * * root ec2_janitor.py --region us-east-1 --action disable_cpu_bursting >> /var/log/ec2_janitor_awstraining.log 2>&1
 */15 * * * * root ec2_janitor.py --region eu-west-1 --action disable_cpu_bursting >> /var/log/ec2_janitor_awstraining.log 2>&1
 
-# avips
-*/20 * * * * root ec2_janitor.py --aws_account avips --region us-west-2 --action disable_cpu_bursting >> /var/log/ec2_janitor_awstraining.log 2>&1
-*/20 * * * * root ec2_janitor.py --aws_account avips --region us-east-1 --action disable_cpu_bursting >> /var/log/ec2_janitor_awstraining.log 2>&1
-*/20 * * * * root ec2_janitor.py --aws_account avips --region eu-west-1 --action disable_cpu_bursting >> /var/log/ec2_janitor_awstraining.log 2>&1
