@@ -210,7 +210,7 @@ if __name__ == "__main__":
         })
 
 
-    webhook_url = 'https://hooks.slack.com/services/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'
+    webhook_url = ''
     evil_janitor = Evil_Janitor(aws_account=args.aws_account, region=args.region, filters=filters, exclude_tag=args.exclude_tag, webhook_url=webhook_url, apply=args.apply, send_message=args.send_message, custom_message_header=args.custom_message_header)
 
     if args.action == 'stop':
