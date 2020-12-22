@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import argparse
 import boto3
 import datetime
@@ -53,7 +53,7 @@ class Evil_Janitor(object):
         stop_instance_ids = []
         stop_instances = {}
         stop_instances['noname'] = []
-        print self.region, 'EC2 resources to be stopped at', self.current_time
+        print(self.region, 'EC2 resources to be stopped at', self.current_time)
         for reservation in self.ec2_instances["Reservations"]:
             for instance in reservation["Instances"]:
                 if instance['State']['Name'] == 'running' and self.exclude_tag not in str(instance):
@@ -63,16 +63,16 @@ class Evil_Janitor(object):
                       if instance['Tags']:
                           for tag in instance['Tags']:
                             if tag['Key'] == 'Name' and tag['Value'] != '':
-                                print tag['Value'], instance['InstanceId']
+                                print(tag['Value'], instance['InstanceId'])
                                 stop_instances[tag['Value']] = instance['InstanceId']
                                 name_tag_exists = True
                           if name_tag_exists == False:
-                              print 'noname', instance['InstanceId']
+                              print('noname', instance['InstanceId'])
                               stop_instances['noname'].append(instance['InstanceId'])
                     except:
-                      print 'noname', instance['InstanceId']
+                      print('noname', instance['InstanceId'])
                       stop_instances['noname'].append(instance['InstanceId'])
-        print 'Stopping Instances List: ', stop_instance_ids
+        print('Stopping Instances List: ', stop_instance_ids)
         if stop_instances['noname'] == []:
             stop_instances.pop('noname')
         if stop_instances and self.send_message:
@@ -89,7 +89,7 @@ class Evil_Janitor(object):
         start_instance_ids = []
         start_instances = {}
         start_instances['noname'] = []
-        print self.region, 'EC2 Resources to be started at', self.current_time
+        print(self.region, 'EC2 Resources to be started at', self.current_time)
         for reservation in self.ec2_instances["Reservations"]:
             for instance in reservation["Instances"]:
                 if instance['State']['Name'] == 'stopped' and self.exclude_tag not in str(instance):
@@ -99,16 +99,16 @@ class Evil_Janitor(object):
                       if instance['Tags']:
                           for tag in instance['Tags']:
                             if tag['Key'] == 'Name' and tag['Value'] != '':
-                              print tag['Value'], instance['InstanceId']
+                              print(tag['Value'], instance['InstanceId'])
                               start_instances[tag['Value']] = instance['InstanceId']
                               name_tag_exists = True
                           if name_tag_exists == False:
-                              print 'noname', instance['InstanceId']
+                              print('noname', instance['InstanceId'])
                               start_instances['noname'].append(instance['InstanceId'])
                     except:
-                      print 'noname', instance['InstanceId']
+                      print('noname', instance['InstanceId'])
                       start_instances['noname'].append(instance['InstanceId'])
-        print 'Starting Instances List:', start_instance_ids
+        print('Starting Instances List:', start_instance_ids)
         if start_instances['noname'] == []:
             start_instances.pop('noname')
         if start_instances and self.send_message:
@@ -126,7 +126,7 @@ class Evil_Janitor(object):
         list_instance_ids = []
         list_instances = {}
         list_instances['noname'] = []
-        print self.region, 'EC2 Resources state at', self.current_time
+        print(self.region, 'EC2 Resources state at', self.current_time)
         for reservation in self.ec2_instances["Reservations"]:
             for instance in reservation["Instances"]:
                 name_tag_exists = False
@@ -134,14 +134,14 @@ class Evil_Janitor(object):
                   try:
                       for tag in instance['Tags']:
                         if tag['Key'] == 'Name' and tag['Value'] != '':
-                            print tag['Value'], instance['InstanceId'], instance['State']['Name'], instance['InstanceType']
+                            print(tag['Value'], instance['InstanceId'], instance['State']['Name'], instance['InstanceType'])
                             list_instances[tag['Value']] = instance['InstanceId']
                             name_tag_exists = True
                       if name_tag_exists == False:
-                          print 'noname', instance['InstanceId'], instance['InstanceType']
+                          print('noname', instance['InstanceId'], instance['InstanceType'])
                           list_instances['noname'].append(instance['InstanceId'])
                   except:
-                    print 'noname', instance['InstanceId'], instance['InstanceType']
+                    print('noname', instance['InstanceId'], instance['InstanceType'])
                     list_instances['noname'].append(instance['InstanceId'])
         if list_instances['noname'] == []:
             list_instances.pop('noname')
@@ -203,14 +203,14 @@ if __name__ == "__main__":
         filters = [{}]
 
     if args.lab_timezone:
-        print "Lab Timezone:", args.lab_timezone
+        print("Lab Timezone:", args.lab_timezone)
         filters.append({
             'Name': 'tag:Lab_Timezone',
             'Values': [args.lab_timezone]
         })
 
 
-    webhook_url = ''
+    webhook_url = 'https://hooks.slack.com/services/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'
     evil_janitor = Evil_Janitor(aws_account=args.aws_account, region=args.region, filters=filters, exclude_tag=args.exclude_tag, webhook_url=webhook_url, apply=args.apply, send_message=args.send_message, custom_message_header=args.custom_message_header)
 
     if args.action == 'stop':
@@ -221,4 +221,4 @@ if __name__ == "__main__":
         evil_janitor.list_instances()
     elif args.action == 'disable_cpu_bursting':
         evil_janitor.disable_cpu_bursting()
-    print args
+    print(args)
